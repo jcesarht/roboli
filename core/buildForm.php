@@ -1,19 +1,19 @@
 <?php
 //use Symfony\Component\Finder\Finder;
 //use Symfony\Component\Filesystem\Filesystem;
-class FileManagerTemplate{
+class BuildForm{
     private $inputs = [];
     public function __construct(){
 
     }
-    public function setInputs($inputs){
+    public function setInputs($inputs):void{
         $this->inputs = $inputs;
     }
     public function getInputs(){
         return $this->inputs;
     }
     //create the inputs in html lenguage with div and boobstraps
-    public function createInputHTML(){
+    private function createInputHTML(){
         $input = $this->getInputs();
         $total_input = count($input);
         $html_inputs = '';
@@ -56,16 +56,36 @@ class FileManagerTemplate{
         }
         return $html_inputs;
     }
+    //create the div like columns to every six "6" inputs
+    public function configLayout (){
+        $inputs = $this->getInputs();
+        //divido el array en 6 partes y los almaceno en otro array llamado $input_content 
+        $input_content = array_chunk($inputs,6,false);
+        $total_input = count($inputs);
+        $total_columns = ceil($total_input/6 );
+        $size_column = (12/$total_columns);
+        $html_content = '';
+        //recorre la cantidad de columnas o divs obtenidos y le agrega los respectivos inputs
+        for($x=0; $x < $total_columns; $x++){
+            $html_content .= '<div class="col-'.$size_column.' ">';
+            $this->setInputs($input_content[$x]);
+            $html_content .= $this->createInputHTML();
+            $html_content .= '</div>';
+        }
+        return $html_content;
+    }
 }
-
-$fm = new FileManagerTemplate();
+$fm = new BuildForm();
 $input = [
     ['type'=>'text','name'=>'first_name','id'=>'first_name','placeholder'=>'First Name'],
     ['type'=>'text','name'=>'last_name','id'=>'last_name','placeholder'=>'Last Name'],
+    ['type'=>'text','name'=>'phone','id'=>'phone','placeholder'=>'Phone'],
+    ['type'=>'text','name'=>'email','id'=>'email','placeholder'=>'Email'],
+    ['type'=>'text','name'=>'address','id'=>'address','placeholder'=>'Address'],
     ['type'=>'select','name'=>'state','id'=>'state','option'=>['opcion 1'=>1,'opcion 2'=>2,'opcion 3'=>3,]],
     ['type'=>'checkbox','name'=>'Agreement','id'=>'agreement','value'=>'Agreement'],    
 ];
 $fm->setInputs($input);
-$input = $fm->createInputHTML();
+$input = $fm->configLayout();
 echo $input;
 ?>
