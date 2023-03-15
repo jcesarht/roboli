@@ -6,6 +6,8 @@
  */
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Filesystem\Filesystem;
+//use roboigniter\core\BuildView\BuildView as BuildView;
+require_once('roboigniter\core\BuildView.php');
 class RoboFile extends \Robo\Tasks
 {
     //define variable
@@ -15,6 +17,7 @@ class RoboFile extends \Robo\Tasks
     public function cgStart(){
         $this->say('<info>Hola. ¿Que deseas hacer?</info>');
         $this->say('<info>1. ¿Crear entorno base bajo la técnica SCAFFOLD para API (Controller + Model)?</info>');
+        $this->say('<info>2. ¿Crear entorno base bajo la técnica SCAFFOLD para MVC (Controller + Model + Vista)?</info>');
         $this->say('<info>0. Salir.</info>');
     	//$this->say('<info>1. ¿Solo crear un modelo (Model)?</info>');
     	//$this->say('<info>2. ¿Solo crear un controlador (Controller)?</info>');
@@ -31,8 +34,17 @@ class RoboFile extends \Robo\Tasks
                 case '1':
     				$confirm = $this->ask("¿Esta usted seguro?. responda con (si/no) o (s/n): ");
                     if(strtolower($confirm) === 's' || strtolower($confirm) === 'si' || strtolower($confirm) === 'sí' ){
+                        $this->cgApiScaffoldConsoleAPI();
+                    }else{
+                        $this->say('<info>De nuevo: </info>');
+                        $this->cgStart();
+                    }
+                    break;
+                case '2':
+                    $confirm = $this->ask("¿Esta usted seguro?. responda con (si/no) o (s/n): ");
+                    if(strtolower($confirm) === 's' || strtolower($confirm) === 'si' || strtolower($confirm) === 'sí' ){
                         $this->say('<info>Generando archivos</info>');
-                        $this->cgApiScaffoldConsole();
+                        $this->cgApiScaffoldConsoleMVC();
                         break;
                     }else{
                         $this->say('<info>De nuevo: </info>');
@@ -46,7 +58,7 @@ class RoboFile extends \Robo\Tasks
     		}
     	}while($opt);
     }
-    function cgApiScaffoldConsole(){
+    function cgApiScaffoldConsoleAPI(){
         $this->say("<info>Dime si generemos de manera automática y predeterminada un modelo y un controlador para un CRUD</info>");
         $confirm = $this->ask("<info>¿Estas de acuerdo? (sí/no) (s/n): </info>");
         if(strtolower($confirm) === 's' || strtolower($confirm) === 'si' || strtolower($confirm) === 'sí' ){
@@ -69,7 +81,30 @@ class RoboFile extends \Robo\Tasks
             }
         }
     }
-
+    function cgApiScaffoldConsoleMVC(){
+        $this->say("<info>Dime si generemos de manera automática y predeterminada un modelo, un controlador y una vista para un CRUD</info>");
+        $confirm = $this->ask("<info>¿Estas de acuerdo? (sí/no) (s/n): </info>");
+        if(strtolower($confirm) === 's' || strtolower($confirm) === 'si' || strtolower($confirm) === 'sí' ){
+            $this->say('<info>-------------------------------------------------------------------------</info>');
+            $this->say('<info>Por favor escribe el nombre en singular del modelo. Con este nombre generaré el modelo y el controlador. </info>');
+            $this->say('<info>Si el nombre esta compuesto por varios nombres, por favor separalos con un guión de piso o underscode "_". </info>');
+            $this->say('<info>-------------------------------------------------------------------------</info>');
+            $this->nombre_patron = $this->ask("<info>Por favor escribe el nombre del modelo en singular: </info>");
+            $this->tableName = $this->ask("<info>Por favor escribe el nombre de la tabla asociada al modelo: </info>");
+            $this->cgCreateModel();
+            $this->cgCreateController();
+            $this->cgCreateView();
+        }else{
+            $this->say('<info>Esta bien, Generaremos un modelo y controlador con plantilla en blanco: </info>');
+            $confirm = $this->ask("<info>¿Estas de acuerdo? (sí/no) (s/n): </info>");
+            if(strtolower($confirm) === 's' || strtolower($confirm) === 'si' || strtolower($confirm) === 'sí' ){
+                $this->say('<info>Otras instrucciones</info>');
+            }else{
+                $this->say('<info>Otras preguntas pendientes.</info>');
+                $this->cgStart();
+            }
+        }
+    }
     function cgCreateModel($modelName = '', $tableName = '' ){
         if($modelName === '') 
         $modelName = strtolower($this->nombre_patron);
@@ -140,4 +175,107 @@ class RoboFile extends \Robo\Tasks
             $this->say("<error>Controlador ya existía en {$file}</error>");
         }
     }
+    private function createView($viewName){
+        $vName = strtolower($viewName);
+        $folderName = $vName;
+        $file = "views/{$folderName}/add.php";
+        $fs = new Filesystem();
+        if (!$fs->exists("views/{$folderName}")) {
+            $fs->mkdir("views/{$folderName}");
+        }
+        if (!$fs->exists($file)) {
+            $this->say("<info>Creando vista add.php</info>");
+            //crear archivo
+            $fs->touch($file);
+            $this->taskWriteToFile($file)
+                ->textFromFile("roboigniter/template_jchtml/simply_crud/add.php")
+                ->run();
+            //reemplazar elementos
+            $reemplazar = array('%inputs%');
+            $reemplazo = array(
+                    $inputs,
+            );
+            $this->taskReplaceInFile($file)
+                    ->from($reemplazar)
+                    ->to($reemplazo)
+                    ->run();
+            $this->say("<info>Vista creada en {$file}</info>");
+        } else {
+            $this->say("<error>Vista ya existía en {$file}</error>");
+        }
+    }
+    public function cgCreateView($viewName = ''){
+        if($viewName === '') 
+        $viewName = strtolower($this->nombre_patron);
+        $inputs = $this->createInputs();
+        var_dump($inputs);exit();      
+        $this->createView($viewName);
+    }
+    private function createInputs(){
+        $input =[];
+        $this->say("<info>___________________________________________________________</info>");
+        $this->say("<info>Crearemos los inputs para el formulario</info>");
+        $continuar = true;
+        $type = 'text';
+        $inputName = '';
+        do{
+            $inputName = $this->ask("<info>Por favor escribe el nombre del input. Debe ser el mismo al campo de tabla de la base de datos </info>");
+            do{
+                $this->say("<info>Selecciona el tipo de input</info>");
+                $this->say("<info>1. type:text</info>");
+                $this->say("<info>2. type:password</info>");
+                $this->say("<info>3. type:number</info>");
+                $this->say("<info>4. type:date</info>");
+                $this->say("<info>5. type:checkbox</info>");
+                $this->say("<info>6. type:radio</info>");
+                $this->say("<info>7. type:select</info>");
+                $select_type = $this->ask("<info>Escoge el type del input</info>");
+                switch($select_type){
+                    case '1' :
+                        $type = 'text';
+                        $select_type = false;
+                        break;
+                    case '2' :
+                        $type = 'password';
+                        $select_type = false;
+                        break;
+                    case '3' :
+                        $type = 'number';
+                        $select_type = false;
+                        break;
+                    case '4' :
+                        $type = 'date';
+                        $select_type = false;
+                        break;
+                    case '5' :
+                        $type = 'checkbox';
+                        $select_type = false;
+                        break;
+                    case '6' :
+                        $type = 'radio';
+                        $select_type = false;
+                        break;
+                    case '7' :
+                        $type = 'select';
+                        $select_type = false;
+                        break;
+                    default :
+                        $select_type = true;
+                        break;
+                }
+            }while($select_type);
+            $Label = $this->ask("<info>Escriba la etiqueta (label) del input</info>");
+            $required = strtolower($this->ask("<info>¿Es esta entrada requerida?(si/no)(s/n)</info>"));
+            if($required === 's' || $required === 'si'){
+                $required = 'required';
+            }
+            array_push($input,['type'=>$type,'name'=>$inputName,'id'=>'id_'.$inputName,'required'=>$required]);
+            $continuar = strtolower($this->ask("<info>¿Deseas crear otro input? (si/no) (s/n)</info>"));
+            if($continuar === 'n' || $continuar === 'no' ){
+                $continuar = false;
+            }
+        }while($continuar);
+        return $input;
+    }
 }
+?>
