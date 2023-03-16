@@ -13,6 +13,8 @@ class RoboFile extends \Robo\Tasks
     //define variable
     private $nombre_patron = '';
     private $tableName = '';
+    private $template = 'simply_crud';
+    private $type_pattern = 'api';
     // define public methods as commands
     public function cgStart(){
         $this->say('<info>Hola. ¿Que deseas hacer?</info>');
@@ -34,6 +36,7 @@ class RoboFile extends \Robo\Tasks
                 case '1':
     				$confirm = $this->ask("¿Esta usted seguro?. responda con (si/no) o (s/n): ");
                     if(strtolower($confirm) === 's' || strtolower($confirm) === 'si' || strtolower($confirm) === 'sí' ){
+                        $this->type_pattern = 'api';
                         $this->cgApiScaffoldConsoleAPI();
                     }else{
                         $this->say('<info>De nuevo: </info>');
@@ -44,6 +47,7 @@ class RoboFile extends \Robo\Tasks
                     $confirm = $this->ask("¿Esta usted seguro?. responda con (si/no) o (s/n): ");
                     if(strtolower($confirm) === 's' || strtolower($confirm) === 'si' || strtolower($confirm) === 'sí' ){
                         $this->say('<info>Generando archivos</info>');
+                        $this->type_pattern = 'mvc';
                         $this->cgApiScaffoldConsoleMVC();
                         break;
                     }else{
@@ -58,7 +62,7 @@ class RoboFile extends \Robo\Tasks
     		}
     	}while($opt);
     }
-    function cgApiScaffoldConsoleAPI(){
+    function cgApiScaffoldConsoleAPI(){ 
         $this->say("<info>Dime si generemos de manera automática y predeterminada un modelo y un controlador para un CRUD</info>");
         $confirm = $this->ask("<info>¿Estas de acuerdo? (sí/no) (s/n): </info>");
         if(strtolower($confirm) === 's' || strtolower($confirm) === 'si' || strtolower($confirm) === 'sí' ){
@@ -125,7 +129,7 @@ class RoboFile extends \Robo\Tasks
           
         //crear archivo a partir del template
         $this->taskWriteToFile($file)
-            ->textFromFile("template_robo/tmodel.scaff.php")
+            ->textFromFile("roboigniter/template_jchtml/{$this->template}/models/{$this->type_pattern}/model.scaff.php")
             ->run();
         //reemplazar elementos
         $reemplazar = array('%Model%','%tableName%');
@@ -158,7 +162,7 @@ class RoboFile extends \Robo\Tasks
             //crear archivo
             $fs->touch($file);
             $this->taskWriteToFile($file)
-                ->textFromFile("template_robo/tcontroller.scaff.php")
+                ->textFromFile("roboigniter/template_jchtml/{$this->template}/controllers/{$this->type_pattern}/controller.scaff.php")
                 ->run();
             //reemplazar elementos
             $reemplazar = array('%Controller%','%Model%');
@@ -194,7 +198,7 @@ class RoboFile extends \Robo\Tasks
             //crear archivo
             $fs->touch($file);
             $this->taskWriteToFile($file)
-                ->textFromFile("roboigniter/template_jchtml/simply_crud/add.php")
+                ->textFromFile("roboigniter/template_jchtml/{$this->template}/views/{$this->type_pattern}/add.php")
                 ->run();
             //reemplazar elementos
             $reemplazar = array('%Inputs%');
