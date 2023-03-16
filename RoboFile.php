@@ -201,9 +201,10 @@ class RoboFile extends \Robo\Tasks
                 ->textFromFile("roboigniter/template_jchtml/{$this->template}/views/{$this->type_pattern}/add.php")
                 ->run();
             //reemplazar elementos
-            $reemplazar = array('%Inputs%');
+            $reemplazar = array('%Inputs%','%Controller%');
             $reemplazo = array(
                     $inputsHTML,
+                    $viewName,
             );
             $this->taskReplaceInFile($file)
                     ->from($reemplazar)

@@ -10,10 +10,13 @@
   </head>
   <body >
     <div class="container">
-      <div class="vh-100 row justify-content-center align-items-center">
-        <div class="col-12 p-5 bg-white border border-info rounded shadow">
+      <div class="vh-100 row justify-content-center align-items-center">  
+      <div class="col-12 p-5 bg-white border border-info rounded shadow">
+      <div class="p-1">
+        <button class="btn btn-primary"> <a href="show.php" class="text-white">Show</a> </button>
+      </div>
         <!-- form with inpust-->  
-        <form>
+        <form action="<?= base_url() ?>index.php/%Controller%/add" method="post"  >
             %Inputs%
             <div class="col-12 align-items-end">
               <button type="submit" class="btn btn-primary col-2">Save</button>

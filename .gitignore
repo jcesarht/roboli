@@ -3,3 +3,7 @@
 vendor/
 composer.json
 composer.lock
+
+controllers/*
+models/*
+views/*

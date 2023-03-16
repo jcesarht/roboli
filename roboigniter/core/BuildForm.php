@@ -27,13 +27,13 @@ class BuildForm{
                 $html_inputs .= '<div class="form-group">';
                 if($input[$x]['type'] == 'text' || $input[$x]['type'] == 'password' || $input[$x]['type'] == 'date' || $input[$x]['type'] == 'number'){
                     $html_inputs .= '<label for="'.$id_input.'">'.$label_name.'</label>';
-                    $html_inputs .= '<input ';
+                    $html_inputs .= '<input class="form-control" ';
                     foreach($input[$x] as $attribute => $value){
                         $html_inputs .= $attribute.' = "'.$value.'" ';
                     }
                     $html_inputs .= '/> ';
                 }else if($input[$x]['type'] == 'checkbox'){
-                    $html_inputs .= '<input ';
+                    $html_inputs .= '<input class="form-control" ';
                     foreach($input[$x] as $attribute => $value){
                         $html_inputs .= $attribute.' = "'.$value.'" ';
                     }
@@ -41,7 +41,7 @@ class BuildForm{
                     $html_inputs .= '<label for="'.$id_input.'">'.$label_name.'</label>';
                 }else if($input[$x]['type'] == 'select'){
                     $html_inputs .= '<label for="'.$id_input.'">'.$label_name.'</label>';
-                    $html_inputs .= '<select ';
+                    $html_inputs .= '<select class="form-control"';
                     foreach($input[$x] as $attribute => $value){
                         if(is_string($value) === true && $attribute !== 'type'){ 
                             $html_inputs .= $attribute.' = "'.$value.'" ';

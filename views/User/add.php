@@ -14,7 +14,7 @@
         <div class="col-12 p-5 bg-white border border-info rounded shadow">
         <!-- form with inpust-->  
         <form>
-            <div class="col-12 "><div class="form-group"><label for="id_T">TTTT</label><input type = "text" name = "T" id = "id_T" required = "required" label = "TTTT" placeholder = "TTTT" />  </select></div><div class="form-group"><label for="id_R">RRRR</label><input type = "password" name = "R" id = "id_R" required = "required" label = "RRRR" placeholder = "RRRR" />  </select></div></div>
+            <div class="col-12 "><div class="form-group"><label for="id_names">Nombres</label><input type = "text" name = "names" id = "id_names" required = "required" label = "Nombres" placeholder = "Nombres" />  </select></div></div>
             <div class="col-12 align-items-end">
               <button type="submit" class="btn btn-primary col-2">Save</button>
             </div>

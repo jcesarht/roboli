@@ -21,6 +21,7 @@ class %Controller% extends CI_Controller {
 	public function __construct(){
 		parent::__construct();
 		$this->load->model("%Model%Model");
+		$this->load->helper('url');
 	}
 	
 	 public function index()
@@ -66,7 +67,7 @@ class %Controller% extends CI_Controller {
 	}
 	 public function add(){
 		$data = $this->input->post();
-		$response = isset($data) ? $this->create($data) : '' ;
+		$response = ($data !== '') ? $this->create($data) : '' ;
 		$this->load->view('%Model%/add');
 	 }
 	 public function query(){
