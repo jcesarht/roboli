@@ -20,9 +20,12 @@ class BuildForm{
         if($total_input !== 0){
             for($x=0; $x < $total_input; $x++ ){
                 $id_input = $input[$x]['id'];
-                $label_name = ucwords(str_replace('_',' ',strtolower($input[$x]['name'])));
+                $label_name = $input[$x]['label'];
+                if($label_name === ''){
+                    $label_name = ucwords(str_replace('_',' ',strtolower($input[$x]['name'])));
+                }
                 $html_inputs .= '<div class="form-group">';
-                if($input[$x]['type'] == 'text'){
+                if($input[$x]['type'] == 'text' || $input[$x]['type'] == 'password' || $input[$x]['type'] == 'date' || $input[$x]['type'] == 'number'){
                     $html_inputs .= '<label for="'.$id_input.'">'.$label_name.'</label>';
                     $html_inputs .= '<input ';
                     foreach($input[$x] as $attribute => $value){
@@ -62,7 +65,7 @@ class BuildForm{
         //divido el array en 6 partes y los almaceno en otro array llamado $input_content 
         $input_content = array_chunk($inputs,6,false);
         $total_input = count($inputs);
-        $total_columns = ceil($total_input/6 );
+        $total_columns = ceil($total_input/6);
         $size_column = (12/$total_columns);
         $html_content = '';
         //recorre la cantidad de columnas o divs obtenidos y le agrega los respectivos inputs
@@ -74,7 +77,7 @@ class BuildForm{
         }
         return $html_content;
     }
-}
+}/*
 $fm = new BuildForm();
 $input = [
     ['type'=>'text','name'=>'first_name','id'=>'first_name','placeholder'=>'First Name'],
@@ -87,5 +90,5 @@ $input = [
 ];
 $fm->setInputs($input);
 $input = $fm->configLayout();
-echo $input;
+echo $input;*/
 ?>

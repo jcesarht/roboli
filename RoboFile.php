@@ -7,7 +7,7 @@
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Filesystem\Filesystem;
 //use roboigniter\core\BuildView\BuildView as BuildView;
-require_once('roboigniter\core\BuildView.php');
+require_once('roboigniter\core\BuildForm.php');
 class RoboFile extends \Robo\Tasks
 {
     //define variable
@@ -175,9 +175,15 @@ class RoboFile extends \Robo\Tasks
             $this->say("<error>Controlador ya existía en {$file}</error>");
         }
     }
-    private function createView($viewName){
+    private function createView($viewName,$inputs_view){
+        $inputs = $inputs_view;
         $vName = strtolower($viewName);
         $folderName = $vName;
+        //creao el objeto buildForm para pasar los input a formato HTML
+        $fm = new BuildForm(); 
+        // creo un div para cada input
+        $fm->setInputs($inputs);
+        $inputsHTML = $fm->configLayout();
         $file = "views/{$folderName}/add.php";
         $fs = new Filesystem();
         if (!$fs->exists("views/{$folderName}")) {
@@ -191,9 +197,9 @@ class RoboFile extends \Robo\Tasks
                 ->textFromFile("roboigniter/template_jchtml/simply_crud/add.php")
                 ->run();
             //reemplazar elementos
-            $reemplazar = array('%inputs%');
+            $reemplazar = array('%Inputs%');
             $reemplazo = array(
-                    $inputs,
+                    $inputsHTML,
             );
             $this->taskReplaceInFile($file)
                     ->from($reemplazar)
@@ -207,19 +213,19 @@ class RoboFile extends \Robo\Tasks
     public function cgCreateView($viewName = ''){
         if($viewName === '') 
         $viewName = strtolower($this->nombre_patron);
-        $inputs = $this->createInputs();
-        var_dump($inputs);exit();      
-        $this->createView($viewName);
+        $inputs = $this->createInputs();      
+        $this->createView($viewName,$inputs);
     }
     private function createInputs(){
         $input =[];
+        $label = '';
         $this->say("<info>___________________________________________________________</info>");
         $this->say("<info>Crearemos los inputs para el formulario</info>");
         $continuar = true;
         $type = 'text';
         $inputName = '';
         do{
-            $inputName = $this->ask("<info>Por favor escribe el nombre del input. Debe ser el mismo al campo de tabla de la base de datos </info>");
+            $inputName = trim($this->ask("<info>Por favor escribe el nombre del input. Debe ser el mismo nombre al campo de tabla de la base de datos </info>"));
             do{
                 $this->say("<info>Selecciona el tipo de input</info>");
                 $this->say("<info>1. type:text</info>");
@@ -264,12 +270,12 @@ class RoboFile extends \Robo\Tasks
                         break;
                 }
             }while($select_type);
-            $Label = $this->ask("<info>Escriba la etiqueta (label) del input</info>");
+            $label = trim($this->ask("<info>Escriba la etiqueta (label) del input</info>"));
             $required = strtolower($this->ask("<info>¿Es esta entrada requerida?(si/no)(s/n)</info>"));
             if($required === 's' || $required === 'si'){
                 $required = 'required';
             }
-            array_push($input,['type'=>$type,'name'=>$inputName,'id'=>'id_'.$inputName,'required'=>$required]);
+            array_push($input,['type'=>$type,'name'=>$inputName,'id'=>'id_'.$inputName,'required'=>$required,'label' => $label,'placeholder' => $label]);
             $continuar = strtolower($this->ask("<info>¿Deseas crear otro input? (si/no) (s/n)</info>"));
             if($continuar === 'n' || $continuar === 'no' ){
                 $continuar = false;

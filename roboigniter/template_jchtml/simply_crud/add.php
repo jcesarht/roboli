@@ -12,21 +12,14 @@
     <div class="container">
       <div class="vh-100 row justify-content-center align-items-center">
         <div class="col-12 p-5 bg-white border border-info rounded shadow">
-          <form>
-            <div class="col-3">
-              <div class="form-group">
-                  <label for="idInputText">Email address</label>
-                  <input type="text" class="form-control" placeholder="email@email.com">
-              </div>
-              <div class="form-group">
-                <label for="idInputPassword">Password</label>
-                <input type="text" class="form-control" placeholder="Password">
-              </div>
-            </div>
+        <!-- form with inpust-->  
+        <form>
+            %Inputs%
             <div class="col-12 align-items-end">
               <button type="submit" class="btn btn-primary col-2">Save</button>
             </div>
         </form>
+        <!-- end the form -->
         </div>
       </div>
     </div>  
