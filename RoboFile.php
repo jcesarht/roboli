@@ -188,16 +188,16 @@ class RoboFile extends \Robo\Tasks
         // creo un div para cada input
         $fm->setInputs($inputs);
         $inputsHTML = $fm->configLayout();
-        $file = "views/{$folderName}/add.php";
+        $file_add = "views/{$folderName}/add.php";
         $fs = new Filesystem();
         if (!$fs->exists("views/{$folderName}")) {
             $fs->mkdir("views/{$folderName}");
         }
-        if (!$fs->exists($file)) {
+        if (!$fs->exists($file_add)) {
             $this->say("<info>Creando vista add.php</info>");
             //crear archivo
-            $fs->touch($file);
-            $this->taskWriteToFile($file)
+            $fs->touch($file_add);
+            $this->taskWriteToFile($file_add)
                 ->textFromFile("roboigniter/template_jchtml/{$this->template}/views/{$this->type_pattern}/add.php")
                 ->run();
             //reemplazar elementos
@@ -206,14 +206,42 @@ class RoboFile extends \Robo\Tasks
                     $inputsHTML,
                     $viewName,
             );
-            $this->taskReplaceInFile($file)
+            $this->taskReplaceInFile($file_add)
                     ->from($reemplazar)
                     ->to($reemplazo)
                     ->run();
-            $this->say("<info>Vista creada en {$file}</info>");
+            $this->say("<info>Vista creada en {$file_add}</info>");
         } else {
-            $this->say("<error>Vista ya existía en {$file}</error>");
+            $this->say("<error>Vista ya existía en {$file_add}</error>");
         }
+        $file_show = "views/{$folderName}/show.php";
+        $fs = new Filesystem();
+        if (!$fs->exists("views/{$folderName}")) {
+            $fs->mkdir("views/{$folderName}");
+        }
+        if (!$fs->exists($file_show)) {
+            $this->say("<info>Creando vista show.php</info>");
+            //crear archivo
+            $fs->touch($file_show);
+            $this->taskWriteToFile($file_show)
+                ->textFromFile("roboigniter/template_jchtml/{$this->template}/views/{$this->type_pattern}/show.php")
+                ->run();
+            //reemplazar elementos
+            $reemplazar = array('%Controller%');
+            $reemplazo = array(
+                    $viewName,
+            );
+            $this->taskReplaceInFile($file_show)
+                    ->from($reemplazar)
+                    ->to($reemplazo)
+                    ->run();
+            $this->say("<info>Vista creada en {$file_show}</info>");
+        } else {
+            $this->say("<error>Vista ya existía en {$file_show}</error>");
+        }
+    }
+    private function createFileView(){
+
     }
     public function cgCreateView($viewName = ''){
         if($viewName === '') 

@@ -70,7 +70,7 @@ class %Controller% extends CI_Controller {
 		$response = ($data !== '') ? $this->create($data) : '' ;
 		$this->load->view('%Model%/add');
 	 }
-	 public function query(){
+	 public function show(){
 		$data = $this->input->get();
 		$response = $this->find($data);
 		echo json_encode($response);
