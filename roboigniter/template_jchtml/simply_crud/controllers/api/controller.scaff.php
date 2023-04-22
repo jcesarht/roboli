@@ -74,7 +74,7 @@ class %Controller% extends CI_Controller {
 		$response = $this->find($data);
 		echo json_encode($response);
 	 }
-	 public function set(){
+	 public function edit(){
 		if(isset($_GET))
 		$data = $this->input->get();
 		if(isset($_POST))

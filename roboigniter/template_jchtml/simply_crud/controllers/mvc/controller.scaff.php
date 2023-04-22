@@ -67,27 +67,29 @@ class %Controller% extends CI_Controller {
 	}
 	 public function add(){
 		$data = $this->input->post();
-		$response = ($data !== '') ? $this->create($data) : '' ;
+		$response = (count($data) !== 0) ? $this->create($data) : '' ;
 		$this->load->view('%Model%/add');
 	 }
 	 public function show(){
 		$data = $this->input->get();
 		$response = $this->find($data);
-		echo json_encode($response);
+		$this->load->view('%Model%/show',$response);
 	 }
-	 public function set(){
-		if(isset($_GET))
+	 public function edit($needle){
+		$search = ['%primaryKey%'=>$needle];
+		$data = $this->search($search);
+		/*if(isset($_GET))
 		$data = $this->input->get();
 		if(isset($_POST))
 		$data = $this->input->post();
-		$id_search = ['id'=>$data['id']];
-		$response = $this->update($id_search,$data);
-		echo json_encode($response);
+		$id_search = ['%primaryKey%'=>$needle];
+		$response = $this->update($id_search,$data);*/
+		$this->load->view('%Model%/add',$data);
 	 }
 	 public function remove(){
 		$data = $this->input->get();
 		$response = $this->delete($data);
-		echo json_encode($response);
+		$this->load->view('%Model%/show');
 	 }
 
 }

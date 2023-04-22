@@ -15,6 +15,7 @@ class RoboFile extends \Robo\Tasks
     private $tableName = '';
     private $template = 'simply_crud';
     private $type_pattern = 'api';
+    private $primaryKey = '';
     // define public methods as commands
     public function cgStart(){
         $this->say('<info>Hola. ¿Que deseas hacer?</info>');
@@ -95,6 +96,7 @@ class RoboFile extends \Robo\Tasks
             $this->say('<info>-------------------------------------------------------------------------</info>');
             $this->nombre_patron = $this->ask("<info>Por favor escribe el nombre del modelo en singular: </info>");
             $this->tableName = $this->ask("<info>Por favor escribe el nombre de la tabla asociada al modelo: </info>");
+            $this->primaryKey = $this->ask("<info>Por favor escribe el nombre de la llave primaria del modelo: </info>");
             $this->cgCreateModel();
             $this->cgCreateController();
             $this->cgCreateView();
@@ -214,6 +216,7 @@ class RoboFile extends \Robo\Tasks
         } else {
             $this->say("<error>Vista ya existía en {$file_add}</error>");
         }
+        $codeshow = $fm->embebCodeToViewShow();
         $file_show = "views/{$folderName}/show.php";
         $fs = new Filesystem();
         if (!$fs->exists("views/{$folderName}")) {
@@ -227,13 +230,19 @@ class RoboFile extends \Robo\Tasks
                 ->textFromFile("roboigniter/template_jchtml/{$this->template}/views/{$this->type_pattern}/show.php")
                 ->run();
             //reemplazar elementos
-            $reemplazar = array('%Controller%');
+            $reemplazar = array('%Thead%','%Tbody%');
             $reemplazo = array(
-                    $viewName,
+                    $codeshow['thead'],
+                    $codeshow['tbody'],
             );
             $this->taskReplaceInFile($file_show)
                     ->from($reemplazar)
                     ->to($reemplazo)
+                    ->run();
+            //volvemos a remplazar sobre lo remplazado para ubicar la llave primaria en los botones edit y delete
+            $this->taskReplaceInFile($file_show)
+                    ->from(array('%primaryKey%'))
+                    ->to($this->primaryKey)
                     ->run();
             $this->say("<info>Vista creada en {$file_show}</info>");
         } else {
@@ -264,10 +273,12 @@ class RoboFile extends \Robo\Tasks
                 $this->say("<info>1. type:text</info>");
                 $this->say("<info>2. type:password</info>");
                 $this->say("<info>3. type:number</info>");
-                $this->say("<info>4. type:date</info>");
-                $this->say("<info>5. type:checkbox</info>");
-                $this->say("<info>6. type:radio</info>");
-                $this->say("<info>7. type:select</info>");
+                $this->say("<info>4. type:email</info>");
+                $this->say("<info>5. type:tel</info>");
+                $this->say("<info>6. type:date</info>");
+                $this->say("<info>7. type:checkbox</info>");
+                $this->say("<info>8. type:radio</info>");
+                $this->say("<info>9. type:select</info>");
                 $select_type = $this->ask("<info>Escoge el type del input</info>");
                 switch($select_type){
                     case '1' :
@@ -283,18 +294,22 @@ class RoboFile extends \Robo\Tasks
                         $select_type = false;
                         break;
                     case '4' :
-                        $type = 'date';
+                        $type = 'email';
                         $select_type = false;
                         break;
                     case '5' :
-                        $type = 'checkbox';
-                        $select_type = false;
-                        break;
-                    case '6' :
-                        $type = 'radio';
+                        $type = 'tel';
                         $select_type = false;
                         break;
                     case '7' :
+                        $type = 'checkbox';
+                        $select_type = false;
+                        break;
+                    case '8' :
+                        $type = 'radio';
+                        $select_type = false;
+                        break;
+                    case '9' :
                         $type = 'select';
                         $select_type = false;
                         break;
