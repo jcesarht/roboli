@@ -26,7 +26,8 @@ class %Controller% extends CI_Controller {
 	
 	 public function index()
 	{
-		$this->load->view('%Model%/show');
+		$response = $this->find([]);
+		$this->load->view('%Model%/show',$response);
 	}
 	private function create(array $data){
 		$response = ['code' => '200','message'=>''];
@@ -75,16 +76,25 @@ class %Controller% extends CI_Controller {
 		$response = $this->find($data);
 		$this->load->view('%Model%/show',$response);
 	 }
-	 public function edit($needle){
-		$search = ['%primaryKey%'=>$needle];
-		$data = $this->search($search);
-		/*if(isset($_GET))
-		$data = $this->input->get();
-		if(isset($_POST))
-		$data = $this->input->post();
-		$id_search = ['%primaryKey%'=>$needle];
-		$response = $this->update($id_search,$data);*/
-		$this->load->view('%Model%/add',$data);
+	 public function edit($needle=''){
+		if($needle === '')
+		{
+			$input = $this->input->post();
+			if(count($input) != 0)
+			{
+				$search = ['%primaryKey%'=>$input['%primaryKey%']];
+				$data = $this->update($search,$input);
+				$this->load->view('%Model%/update');
+			}else{
+				$this->index();
+			}
+			
+		}else
+		{
+			$search = ['%primaryKey%'=>$needle];
+			$data = $this->find($search);
+			$this->load->view('%Model%/update',$data);
+		}
 	 }
 	 public function remove(){
 		$data = $this->input->get();

@@ -176,6 +176,11 @@ class RoboFile extends \Robo\Tasks
                     ->from($reemplazar)
                     ->to($reemplazo)
                     ->run();
+            //volvemos a remplazar sobre lo remplazado para ubicar la llave primaria y permita que funcione el metodo update and delete
+            $this->taskReplaceInFile($file)
+            ->from(array('%primaryKey%'))
+            ->to([$this->primaryKey])
+            ->run();
             $this->say("<info>Controlador creado en {$file}</info>");
         } else {
             $this->say("<error>Controlador ya existía en {$file}</error>");
@@ -185,7 +190,7 @@ class RoboFile extends \Robo\Tasks
         $inputs = $inputs_view;
         $vName = strtolower($viewName);
         $folderName = $vName;
-        //creao el objeto buildForm para pasar los input a formato HTML
+        //create the objet buildForm for casting the input to HTML format
         $fm = new BuildForm(); 
         // creo un div para cada input
         $fm->setInputs($inputs);
@@ -197,12 +202,12 @@ class RoboFile extends \Robo\Tasks
         }
         if (!$fs->exists($file_add)) {
             $this->say("<info>Creando vista add.php</info>");
-            //crear archivo
+            //create file
             $fs->touch($file_add);
             $this->taskWriteToFile($file_add)
                 ->textFromFile("roboigniter/template_jchtml/{$this->template}/views/{$this->type_pattern}/add.php")
                 ->run();
-            //reemplazar elementos
+            //replace elements
             $reemplazar = array('%Inputs%','%Controller%');
             $reemplazo = array(
                     $inputsHTML,
@@ -212,16 +217,49 @@ class RoboFile extends \Robo\Tasks
                     ->from($reemplazar)
                     ->to($reemplazo)
                     ->run();
+            //volvemos a remplazar sobre lo remplazado para ubicar la llave primaria y permita que funcione como un formulario para update
+            $this->taskReplaceInFile($file_add)
+                    ->from(array('%primaryKey%'))
+                    ->to([$this->primaryKey])
+                    ->run();
             $this->say("<info>Vista creada en {$file_add}</info>");
         } else {
             $this->say("<error>Vista ya existía en {$file_add}</error>");
         }
+        //view update
+        $file_update = "views/{$folderName}/update.php";
+        $fs = new Filesystem();
+        $fm->setInputs($inputs);
+        $inputsHTML = $fm->configLayout('update');
+        if (!$fs->exists($file_update)) {
+            $this->say("<info>Creando vista update.php</info>");
+            //create file
+            $fs->touch($file_update);
+            $this->taskWriteToFile($file_update)
+                ->textFromFile("roboigniter/template_jchtml/{$this->template}/views/{$this->type_pattern}/update.php")
+                ->run();
+            //replace elements
+            $reemplazar = array('%Inputs%','%Controller%');
+            $reemplazo = array(
+                    $inputsHTML,
+                    $viewName,
+            );
+            $this->taskReplaceInFile($file_update)
+                    ->from($reemplazar)
+                    ->to($reemplazo)
+                    ->run();
+            //volvemos a remplazar sobre lo remplazado para ubicar la llave primaria y permita que funcione como un formulario para update
+            $this->taskReplaceInFile($file_update)
+                    ->from(array('%primaryKey%'))
+                    ->to([$this->primaryKey])
+                    ->run();
+            $this->say("<info>Vista creada en {$file_update}</info>");
+        } else {
+            $this->say("<error>Vista ya existía en {$file_update}</error>");
+        }
         $codeshow = $fm->embebCodeToViewShow();
         $file_show = "views/{$folderName}/show.php";
         $fs = new Filesystem();
-        if (!$fs->exists("views/{$folderName}")) {
-            $fs->mkdir("views/{$folderName}");
-        }
         if (!$fs->exists($file_show)) {
             $this->say("<info>Creando vista show.php</info>");
             //crear archivo
@@ -242,7 +280,7 @@ class RoboFile extends \Robo\Tasks
             //volvemos a remplazar sobre lo remplazado para ubicar la llave primaria en los botones edit y delete
             $this->taskReplaceInFile($file_show)
                     ->from(array('%primaryKey%'))
-                    ->to($this->primaryKey)
+                    ->to([$this->primaryKey])
                     ->run();
             $this->say("<info>Vista creada en {$file_show}</info>");
         } else {

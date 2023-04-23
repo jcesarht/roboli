@@ -21,6 +21,7 @@ class User extends CI_Controller {
 	public function __construct(){
 		parent::__construct();
 		$this->load->model("userModel");
+		$this->load->helper('url');
 	}
 	
 	 public function index()
@@ -66,27 +67,29 @@ class User extends CI_Controller {
 	}
 	 public function add(){
 		$data = $this->input->post();
-		$response = isset($data) ? $this->create($data) : '' ;
+		$response = (count($data) !== 0) ? $this->create($data) : '' ;
 		$this->load->view('user/add');
 	 }
-	 public function query(){
+	 public function show(){
 		$data = $this->input->get();
 		$response = $this->find($data);
-		echo json_encode($response);
+		$this->load->view('user/show',$response);
 	 }
-	 public function set(){
-		if(isset($_GET))
+	 public function edit($needle){
+		$search = ['id'=>$needle];
+		$data = $this->find($search);
+		/*if(isset($_GET))
 		$data = $this->input->get();
 		if(isset($_POST))
 		$data = $this->input->post();
-		$id_search = ['id'=>$data['id']];
-		$response = $this->update($id_search,$data);
-		echo json_encode($response);
+		$id_search = ['id'=>$needle];
+		$response = $this->update($id_search,$data);*/
+		$this->load->view('user/add',$data);
 	 }
 	 public function remove(){
 		$data = $this->input->get();
 		$response = $this->delete($data);
-		echo json_encode($response);
+		$this->load->view('user/show');
 	 }
 
 }
