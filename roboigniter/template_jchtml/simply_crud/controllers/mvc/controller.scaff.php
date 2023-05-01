@@ -96,10 +96,23 @@ class %Controller% extends CI_Controller {
 			$this->load->view('%Model%/update',$data);
 		}
 	 }
-	 public function remove(){
-		$data = $this->input->get();
-		$response = $this->delete($data);
-		$this->load->view('%Model%/show');
+	 public function remove($needle=''){
+		$url_base = base_url().'index.php/';
+		if($needle === ''){
+			$input = $this->input->post();
+			if(count($input) != 0)
+			{
+				$search = ['%primaryKey%'=>$input['%primaryKey%']];
+				$data = $this->update($search,$input);
+				redirect($url_base.'/%Model%/show');
+			}else{
+				$this->index();
+			}
+		}else{
+			$search = ['%primaryKey%'=>$needle];
+			$this->delete($search);
+			redirect($url_base.'%Model%/show');
+		}
 	 }
 
 }

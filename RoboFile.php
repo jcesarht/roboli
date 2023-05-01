@@ -47,7 +47,6 @@ class RoboFile extends \Robo\Tasks
                 case '2':
                     $confirm = $this->ask("¿Esta usted seguro?. responda con (si/no) o (s/n): ");
                     if(strtolower($confirm) === 's' || strtolower($confirm) === 'si' || strtolower($confirm) === 'sí' ){
-                        $this->say('<info>Generando archivos</info>');
                         $this->type_pattern = 'mvc';
                         $this->cgApiScaffoldConsoleMVC();
                         break;
