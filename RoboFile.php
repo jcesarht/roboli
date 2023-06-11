@@ -371,12 +371,12 @@ class RoboFile extends \Robo\Tasks
                     $label_option = trim($this->ask("<info>Escriba la etiqueta (label) o nombre del radio input</info>"));
                     $valor_option = trim($this->ask("<info>Escriba el valor del ".$type." input</info>"));
                     array_push($options,[$label_option => $valor_option]);
-                    $selec_option = strtolower($this->ask("<info>¿Deseas crear otro input? (si/no) (s/n)</info>"));
+                    $selec_option = strtolower($this->ask("<info>¿Deseas crear otro input radio? (si/no) (s/n)</info>"));
                     if($selec_option === 'n' || $selec_option === 'no' ){
                         $selec_option = false;
                     } 
                 }while($selec_option);
-                array_push($input,['type'=>$type,'name'=>$inputName,'required'=>$required,'options'=>$options]);
+                array_push($input,['type'=>$type,'name'=>$inputName,'required'=>$required,'options'=>$options,'label' => $label]);
             }else{
                 array_push($input,['type'=>$type,'name'=>$inputName,'id'=>'id_'.$inputName,'required'=>$required,'label' => $label,'placeholder' => $label]);
             }

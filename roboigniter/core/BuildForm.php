@@ -30,8 +30,7 @@ class BuildForm{
                 if($label_name === ''){
                     $label_name = ucwords(str_replace('_',' ',strtolower($input[$x]['name'])));
                 }
-                $html_inputs .= '
-                <div class="form-group">';
+                
                 if($input[$x]['type'] == 'text' ||
                  $input[$x]['type'] == 'password' ||
                  $input[$x]['type'] == 'date' ||
@@ -39,28 +38,39 @@ class BuildForm{
                  $input[$x]['type'] == 'email' ||
                  $input[$x]['type'] == 'tel')
                 {
+                    $html_inputs .= '
+                    <div class="form-group">';
                     $html_inputs .= '<label for="'.$id_input.'">'.$label_name.'</label>';
                     $html_inputs .= '<input class="form-control" ';
                     foreach($input[$x] as $attribute => $value){
                         $html_inputs .= $attribute.'="'.$value.'" ';
                     }
                     $html_inputs .= ' /> ';
+                    $html_inputs .= '</div>';
                 }else if($input[$x]['type'] == 'radio'){
-                    
-                    foreach($input[$x]['options'] as $label => $value_opt){
-                        $id_input = 'radio_id_'.str_replace(' ','_',$label);
-                        $label_name = $label;
-                        $html_inputs .= '<input class="form-control" ';
+                    foreach($input[$x]['options'] as $item_radio => $radio){
+                        $html_inputs .= '
+                        <div class="form-check form-check-inline">';
+                        $label_name = '';
+                        $html_inputs .= '<input class="form-check-input" ';
                         foreach($input[$x] as $attribute => $value_att){
                             if(is_string($value_att) === true){
                                 $html_inputs .= $attribute.' = "'.$value_att.'" ';
                             }
                         }
-                        $html_inputs .= ' value="'.$value_opt.'" id="'.$id_input.'"/>';
+                        foreach($radio as $key => $value){
+                            $id_input = 'radio_id_'. strtolower(str_replace(' ','_',$key));
+                            $html_inputs .=' value="'.$value.'" '; 
+                            $label_name = $key;   
+                        }
+                        $html_inputs .= 'id="'.$id_input.'"/>';
                         $html_inputs .= '<label for="'.$id_input.'">'.$label_name.'</label>';
+                        $html_inputs .= '</div>';
                     }
                 }
                 else if($input[$x]['type'] == 'checkbox'){
+                    $html_inputs .= '
+                    <div class="form-group">';
                     $html_inputs .= '<input class="form-control" ';
                     foreach($input[$x] as $attribute => $value){
                         $html_inputs .= $attribute.' = "'.$value.'" ';
@@ -98,13 +108,19 @@ class BuildForm{
                 <?php $there_data = (isset($data))? true : false;
                     if($there_data === true)
                     {
-                ?>        <input type="hidden" value="<?php echo $data[0][\"%primaryKey%\"]; ?>" name="%primaryKey%" id="%primaryKey%" />
+                ?>        <input type="hidden" value="<?php echo $data[0][\'%primaryKey%\']; ?>" name="%primaryKey%" id="%primaryKey%" />
                 <?php
                     }
                 ?>';
             for($x=0; $x < $total_input; $x++ ){
-                $id_input = $input[$x]['id'];
-                $label_name = $input[$x]['label'];
+                $id_input = 'id_'.rand();
+                $label_name = '';
+                if(isset($input[$x]['id'])){
+                    $id_input = $input[$x]['id'];
+                }
+                if(isset($input[$x]['label'])){
+                    $label_name = $input[$x]['label'];
+                }
                 if($label_name === ''){
                     $label_name = ucwords(str_replace('_',' ',strtolower($input[$x]['name'])));
                 }
@@ -122,19 +138,29 @@ class BuildForm{
                     foreach($input[$x] as $attribute => $value){
                         $html_inputs .= $attribute.'="'.$value.'" ';
                     }
-                    $html_inputs .= '<?php if($there_data){ echo \'value="\'.$data[0]->'.$input[$x]['name'].'.\'" \'; } ?> /> ';
+                    $html_inputs .= '<?php if($there_data){ echo \'value="\'.$data[0]["'.$input[$x]['name'].'"].\'" \'; } ?> /> ';
                 }else if($input[$x]['type'] == 'radio'){
                     
-                    foreach($input[$x]['options'] as $label => $value_opt){
-                        $id_input = 'radio_id_'.str_replace(' ','_',$label);
-                        $label_name = $label;
-                        $html_inputs .= '<input class="form-control" ';
+                    foreach($input[$x]['options'] as $item_radio => $radio){
+                        $html_inputs .= '
+                        <div class="form-check form-check-inline">';
+                        $label_name = '';
+                        $html_inputs .= '<input class="form-check-input" ';
                         foreach($input[$x] as $attribute => $value_att){
-                            $html_inputs .= $attribute.' = "'.$value_att.'" ';
+                            if(is_string($value_att) === true){
+                                $html_inputs .= $attribute.' = "'.$value_att.'" ';
+                            }
                         }
-                        $html_inputs .= ' value="'.$value_opt.'"/>';
+                        foreach($radio as $key => $value){
+                            $id_input = 'radio_id_'. strtolower(str_replace(' ','_',$key));
+                            $html_inputs .=' value="'.$value.'" '; 
+                            $label_name = $key;   
+                        }
+                        $html_inputs .= 'id="'.$id_input.'"/>';
                         $html_inputs .= '<label for="'.$id_input.'">'.$label_name.'</label>';
+                        $html_inputs .= '</div>';
                     }
+
                 }else if($input[$x]['type'] == 'checkbox'){
                     $html_inputs .= '<input class="form-control" ';
                     foreach($input[$x] as $attribute => $value){
@@ -175,6 +201,7 @@ class BuildForm{
         $html_content = '';
         //recorre la cantidad de columnas o divs obtenidos y le agrega los respectivos inputs
         for($x=0; $x < $total_columns; $x++){
+            
             $html_content .= '<div class="col-'.$size_column.' ">';
             $this->setInputs($input_content[$x]);
             if($view === 'add'){
