@@ -7,157 +7,76 @@
 		}
 		
 		public function insert($columns){
-			$error = ['error'=> false,'message' => ''];
-			$result = [
-				'error' => false,
-				'success' => true,
-			];
-			if(!is_array($columns)){
-				$error['error'] = true;
-				$error['message'] = 'The params isn´t type array.';
-				$result = [
-					'error' => $error,
-					'success' => false
-				];
-			}else{
-				$insert = $this->db->insert('%tableName%',$columns);
-				$result['success'] = $insert;
-				if(!$insert){
-					$log = $this->db->error();
-					$error['error'] = true;
-					$error['message'] = 'Code ['.$log['code'].']: '.$log['message'];
-					$result['error'] = $error;
+			$response = false;
+			try{
+				if(is_array($columns)){
+					$insert = $this->db->insert('%tableName%',$columns);
+					if($insert == true){
+						$response = true;
+					}
 				}
+			}catch(Exception $e){
 			}
-			return $result;
+			return $response;
 		}
 		public function find($params = '*'){
-			$error = ['error'=> false,'message' => ''];
-			$result = [
-				'error' => false,
-				'success' => true,
-			];
-			if($params !== '*'){
+			$response = false;
+			try{
 				if(is_array($params)){
 					foreach($params as $key => $value){
 						$this->db->where($key,$value);
 					}
 					$consulta = $this->db->get('%tableName%');
-					$log = $this->db->error();
-					if($log['code'] != NULL){
-						$error['error'] = true;
-						$error['message'] = 'Code ['.$log['code'].']: '.$log['message'];
-						$result['error'] = $error;
-					}else{
-						$result = [
-							'error' => $error,
-							'success' => true,
-							'data' => $consulta->result()
-						];
+					if($consulta->num_rows() > 0){
+						$response = $consulta->result_array();
 					}
 				}else{
-					$error['error'] = true;
-					$error['message'] = 'The params isn´t array type.';
-					$result = [
-						'error' => $error,
-						'success' => false
-					];
+					$consulta = $this->db->get('%tableName%');	
+					if($consulta->num_rows() > 0){
+						$response = $consulta->result_array();
+					}
 				}
-			}else{
-				$consulta = $this->db->get('%tableName%');
-				$log = $this->db->error();
-				if($log['code'] !== NULL){
-					$error['error'] = true;
-					$error['message'] = 'Code ['.$log['code'].']: '.$log['message'];
-					$result['error'] = $error;
-				}else{
-					$result = [
-						'error' => $error,
-						'success' => true,
-						'data' => $consulta->result()
-					];
-				}
+			}catch(Exception $e){
 			}
-			return $result;
+			return $response;
 		}
+
 		public function update($paramsSearch, $columnsValues){
-			$error = ['error'=> false,'message' => ''];
-			$result = [
-				'error' => false,
-				'success' => true,
-			];
-			if(is_array($paramsSearch) && is_array($columnsValues)){
+			try{
+				$response = false;
+				if(!is_array($paramsSearch)){
+					throw new Exception("");
+				}
+				if(!is_array($columnsValues)){
+					throw new Exception("");
+				}
 				foreach($paramsSearch as $key => $value){
 					$this->db->where($key,$value);
 				}
 				$consulta = $this->db->update('%tableName%',$columnsValues);
-				$log = $this->db->error();
-				if($log['code'] != NULL){
-					$error['error'] = true;
-					$error['message'] = 'Code ['.$log['code'].']: '.$log['message'];
-					$result['error'] = $error;
-				}else{
-					$result = [
-						'error' => $error,
-						'success' => true,
-					];
+				if($consulta == false){
+					throw new Exception("");
 				}
-			}else{
-				$error['error'] = true;
-				$error['message'] = 'The params of search or columns - values isn´t type array.';
-				$result = [
-					'error' => $error,
-					'success' => false
-				];
+				$response = true;
+			}catch(Exception $e){
 			}
-			return $result;
+			return $response;
 		}
 		public function delete($params = '*'){
-			$error = ['error'=> false,'message' => ''];
-			$result = [
-				'error' => false,
-				'success' => true,
-			];
+			$response = false;
 			if($params !== '*'){
-				if(is_array($params)){
-					foreach($params as $key => $value){
-						$this->db->where($key,$value);
-					}
-					$delete = $this->db->delete('%tableName%');
-					$log = $this->db->error();
-					if($log['code'] != NULL){
-						$error['error'] = true;
-						$error['message'] = 'Code ['.$log['code'].']: '.$log['message'];
-						$result['error'] = $error;
-					}else{
-						$result = [
-							'error' => $error,
-							'success' => true,
-						];
-					}
-				}else{
-					$error['error'] = true;
-					$error['message'] = 'The params isn´t array type.';
-					$result = [
-						'error' => $error,
-						'success' => false
-					];
+				if(!is_array($params)){
+					throw new Exception("");
 				}
-			}else{
+				foreach($params as $key => $value){
+					$this->db->where($key,$value);
+				}
 				$delete = $this->db->delete('%tableName%');
 				$log = $this->db->error();
 				if($log['code'] != NULL){
-					$error['error'] = true;
-					$error['message'] = 'Code ['.$log['code'].']: '.$log['message'];
-					$result['error'] = $error;
-				}else{
-					$result = [
-						'error' => $error,
-						'success' => true,
-						'data' => $delete->result()
-					];
+					throw new Exception("");
 				}
 			}
-			return $result;
+			return $response;
 		}
 	}

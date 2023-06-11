@@ -338,6 +338,10 @@ class RoboFile extends \Robo\Tasks
                         $type = 'tel';
                         $select_type = false;
                         break;
+                    case '6' :
+                        $type = 'date';
+                        $select_type = false;
+                        break;
                     case '7' :
                         $type = 'checkbox';
                         $select_type = false;

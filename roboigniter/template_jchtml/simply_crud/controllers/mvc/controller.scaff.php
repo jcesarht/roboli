@@ -32,7 +32,7 @@ class %Controller% extends CI_Controller {
 	private function create(array $data){
 		$response = ['code' => '200','message'=>''];
 		$result = $this->%Model%Model->insert($data);
-		if ($result['success']){
+		if ($result != false){
 			$response['code'] = 200;
 			$response['message'] = 'Data saved success';
 		}
@@ -41,9 +41,9 @@ class %Controller% extends CI_Controller {
 	private function find(array $data){
 		$response = ['code' => '200','message'=>''];
 		$result = $this->%Model%Model->find($data);
-		if ($result['success']){
+		if ($result != false){
 			$response['code'] = 200;
-			$response['data'] = $result['data'];
+			$response['data'] = $result;
 			$response['message'] = 'Data found success';
 		}
 		return $response;
@@ -51,7 +51,7 @@ class %Controller% extends CI_Controller {
 	private function update($search,$data){
 		$response = ['code' => '200','message'=>''];
 		$result = $this->%Model%Model->update($search,$data);
-		if ($result['success']){
+		if ($result != false){
 			$response['code'] = 200;
 			$response['message'] = 'Data updated success';
 		}
@@ -60,7 +60,7 @@ class %Controller% extends CI_Controller {
 	private function delete($data){
 		$response = ['code' => '200','message'=>''];
 		$result = $this->%Model%Model->delete($data);
-		if ($result['success']){
+		if ($result != false){
 			$response['code'] = 200;
 			$response['message'] = 'Data delete success';
 		}

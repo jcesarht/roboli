@@ -19,8 +19,14 @@ class BuildForm{
         $html_inputs = '';
         if($total_input !== 0){
             for($x=0; $x < $total_input; $x++ ){
-                $id_input = $input[$x]['id'];
-                $label_name = $input[$x]['label'];
+                $id_input = 'id_'.rand();
+                $label_name = '';
+                if(isset($input[$x]['id'])){
+                    $id_input = $input[$x]['id'];
+                }
+                if(isset($input[$x]['label'])){
+                    $label_name = $input[$x]['label'];
+                }
                 if($label_name === ''){
                     $label_name = ucwords(str_replace('_',' ',strtolower($input[$x]['name'])));
                 }
@@ -32,14 +38,29 @@ class BuildForm{
                  $input[$x]['type'] == 'number' ||
                  $input[$x]['type'] == 'email' ||
                  $input[$x]['type'] == 'tel')
-                 {
+                {
                     $html_inputs .= '<label for="'.$id_input.'">'.$label_name.'</label>';
                     $html_inputs .= '<input class="form-control" ';
                     foreach($input[$x] as $attribute => $value){
                         $html_inputs .= $attribute.'="'.$value.'" ';
                     }
                     $html_inputs .= ' /> ';
-                }else if($input[$x]['type'] == 'checkbox'){
+                }else if($input[$x]['type'] == 'radio'){
+                    
+                    foreach($input[$x]['options'] as $label => $value_opt){
+                        $id_input = 'radio_id_'.str_replace(' ','_',$label);
+                        $label_name = $label;
+                        $html_inputs .= '<input class="form-control" ';
+                        foreach($input[$x] as $attribute => $value_att){
+                            if(is_string($value_att) === true){
+                                $html_inputs .= $attribute.' = "'.$value_att.'" ';
+                            }
+                        }
+                        $html_inputs .= ' value="'.$value_opt.'" id="'.$id_input.'"/>';
+                        $html_inputs .= '<label for="'.$id_input.'">'.$label_name.'</label>';
+                    }
+                }
+                else if($input[$x]['type'] == 'checkbox'){
                     $html_inputs .= '<input class="form-control" ';
                     foreach($input[$x] as $attribute => $value){
                         $html_inputs .= $attribute.' = "'.$value.'" ';
@@ -56,7 +77,7 @@ class BuildForm{
                         }
                     }
                     $html_inputs .= '/> ';
-                    foreach($input[$x]['option'] as $option => $value){
+                    foreach($input[$x]['options'] as $option => $value){
                         $html_inputs .= '<option value = "'.$value.'">'.$option.'</option>';
                     }
                     $html_inputs .= ' </select></div>';
@@ -77,7 +98,7 @@ class BuildForm{
                 <?php $there_data = (isset($data))? true : false;
                     if($there_data === true)
                     {
-                ?>        <input type="hidden" value="<?php echo $data[0]->%primaryKey%; ?>" name="%primaryKey%" id="%primaryKey%" />
+                ?>        <input type="hidden" value="<?php echo $data[0][\"%primaryKey%\"]; ?>" name="%primaryKey%" id="%primaryKey%" />
                 <?php
                     }
                 ?>';
@@ -102,6 +123,18 @@ class BuildForm{
                         $html_inputs .= $attribute.'="'.$value.'" ';
                     }
                     $html_inputs .= '<?php if($there_data){ echo \'value="\'.$data[0]->'.$input[$x]['name'].'.\'" \'; } ?> /> ';
+                }else if($input[$x]['type'] == 'radio'){
+                    
+                    foreach($input[$x]['options'] as $label => $value_opt){
+                        $id_input = 'radio_id_'.str_replace(' ','_',$label);
+                        $label_name = $label;
+                        $html_inputs .= '<input class="form-control" ';
+                        foreach($input[$x] as $attribute => $value_att){
+                            $html_inputs .= $attribute.' = "'.$value_att.'" ';
+                        }
+                        $html_inputs .= ' value="'.$value_opt.'"/>';
+                        $html_inputs .= '<label for="'.$id_input.'">'.$label_name.'</label>';
+                    }
                 }else if($input[$x]['type'] == 'checkbox'){
                     $html_inputs .= '<input class="form-control" ';
                     foreach($input[$x] as $attribute => $value){
@@ -119,11 +152,12 @@ class BuildForm{
                         }
                     }
                     $html_inputs .= '/> ';
-                    foreach($input[$x]['option'] as $option => $value){
+                    foreach($input[$x]['options'] as $option => $value){
                         $html_inputs .= '<option value = "'.$value.'">'.$option.'</option>';
                     }
                     $html_inputs .= ' </select></div>';
                 }
+                
             }
         }else{
             $html_inputs = '<!-- put the html code for input here -->';
@@ -167,15 +201,15 @@ class BuildForm{
                 ';
                 }
                 if($key === 'name'){  
-                    $record .= 'echo \'<td>\'.$record->'.$value.'.\'</td>\' ;
+                    $record .= 'echo \'<td>\'.$record["'.$value.'"].\'</td>\' ;
                 ';
                 }
             }   
         }
         $record .= 'echo \'<td>
                             <div class="col-*">
-                            <a href="edit/\'.$record->%primaryKey%.\'" class="btn btn-warning cols-6">Edit</a>
-                            <a href="remove/\'.$record->%primaryKey%.\'" class="btn btn-danger cols-6">Remove</a>
+                            <a href="edit/\'.$record["%primaryKey%"].\'" class="btn btn-warning cols-6">Edit</a>
+                            <a href="remove/\'.$record["%primaryKey%"].\'" class="btn btn-danger cols-6">Remove</a>
                             </div>
                         </td>\' ;
         ';  
@@ -191,18 +225,19 @@ class BuildForm{
         return ['thead' => $heads, 'tbody' => $embeb];
     }
 }
-/*
+
 $fm = new BuildForm();
 $input = [
     ['type'=>'text','name'=>'first_name','id'=>'first_name','placeholder'=>'First Name','label'=> 'First Name'],
-    ['type'=>'text','name'=>'last_name','id'=>'last_name','placeholder'=>'Last Name'],
-    ['type'=>'text','name'=>'phone','id'=>'phone','placeholder'=>'Phone'],
-    ['type'=>'text','name'=>'email','id'=>'email','placeholder'=>'Email'],
-    ['type'=>'text','name'=>'address','id'=>'address','placeholder'=>'Address'],
-    ['type'=>'select','name'=>'state','id'=>'state','option'=>['opcion 1'=>1,'opcion 2'=>2,'opcion 3'=>3,]],
-    ['type'=>'checkbox','name'=>'Agreement','id'=>'agreement','value'=>'Agreement'],    
+    ['type'=>'text','name'=>'last_name','id'=>'last_name','placeholder'=>'Last Name', 'label'=> 'Last Name'],
+    ['type'=>'text','name'=>'phone','id'=>'phone','placeholder'=>'Phone', 'label'=> 'Phone'],
+    ['type'=>'text','name'=>'email','id'=>'email','placeholder'=>'Email', 'label'=> 'Email'],
+    ['type'=>'text','name'=>'address','id'=>'address','placeholder'=>'Address','label'=> 'Address'],
+    ['type'=>'select','name'=>'state','id'=>'state','options'=>['opcion 1'=>1,'opcion 2'=>2,'opcion 3'=>3],'label'=> 'State'],
+    ['type'=>'checkbox','name'=>'Agreement','id'=>'agreement','value'=>'Agreement', 'label'=> 'Checkbox Example'], 
+    ['type'=>'radio','name'=>'sex','options'=>['Male'=>'male','Female'=>'female']],   
 ];
 $fm->setInputs($input);
-$input = $fm->embebCodeToViewShow();
-var_dump($input);*/
+$input = $fm->configLayout();
+echo($input);
 ?>
