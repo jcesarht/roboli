@@ -225,7 +225,7 @@ class BuildForm{
         return ['thead' => $heads, 'tbody' => $embeb];
     }
 }
-
+/*
 $fm = new BuildForm();
 $input = [
     ['type'=>'text','name'=>'first_name','id'=>'first_name','placeholder'=>'First Name','label'=> 'First Name'],
@@ -240,4 +240,5 @@ $input = [
 $fm->setInputs($input);
 $input = $fm->configLayout();
 echo($input);
+*/
 ?>

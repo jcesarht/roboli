@@ -303,6 +303,7 @@ class RoboFile extends \Robo\Tasks
         $continuar = true;
         $type = 'text';
         $inputName = '';
+        $options=[];
         do{
             $inputName = trim($this->ask("<info>Por favor escribe el nombre del input. Debe ser el mismo nombre al campo de tabla de la base de datos </info>"));
             do{
@@ -364,7 +365,21 @@ class RoboFile extends \Robo\Tasks
             if($required === 's' || $required === 'si'){
                 $required = 'required';
             }
-            array_push($input,['type'=>$type,'name'=>$inputName,'id'=>'id_'.$inputName,'required'=>$required,'label' => $label,'placeholder' => $label]);
+            if($type === 'radio' || $type === 'select'){
+                $selec_option = true;
+                do{
+                    $label_option = trim($this->ask("<info>Escriba la etiqueta (label) o nombre del radio input</info>"));
+                    $valor_option = trim($this->ask("<info>Escriba el valor del ".$type." input</info>"));
+                    array_push($options,[$label_option => $valor_option]);
+                    $selec_option = strtolower($this->ask("<info>¿Deseas crear otro input? (si/no) (s/n)</info>"));
+                    if($selec_option === 'n' || $selec_option === 'no' ){
+                        $selec_option = false;
+                    } 
+                }while($selec_option);
+                array_push($input,['type'=>$type,'name'=>$inputName,'required'=>$required,'options'=>$options]);
+            }else{
+                array_push($input,['type'=>$type,'name'=>$inputName,'id'=>'id_'.$inputName,'required'=>$required,'label' => $label,'placeholder' => $label]);
+            }
             $continuar = strtolower($this->ask("<info>¿Deseas crear otro input? (si/no) (s/n)</info>"));
             if($continuar === 'n' || $continuar === 'no' ){
                 $continuar = false;
