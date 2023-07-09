@@ -68,7 +68,9 @@ class %Controller% extends CI_Controller {
 	}
 	 public function add(){
 		$data = $this->input->post();
-		$response = (count($data) !== 0) ? $this->create($data) : '' ;
+		if(!empty($data)){
+			$response = (count($data) !== 0) ? $this->create($data) : '' ;
+		}
 		$this->load->view('%Model%/add');
 	 }
 	 public function show(){

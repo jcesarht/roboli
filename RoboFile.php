@@ -292,8 +292,12 @@ class RoboFile extends \Robo\Tasks
     public function cgCreateView($viewName = ''){
         if($viewName === '') 
         $viewName = strtolower($this->nombre_patron);
-        $inputs = $this->createInputs();      
+        $inputs = $this->createInputs();            
         $this->createView($viewName,$inputs);
+        $nombreArchivo = "config_input.txt";
+        $archivo = fopen($nombreArchivo, "w");
+        fwrite($archivo, json_encode($inputs));
+        fclose($archivo);
     }
     private function createInputs(){
         $input =[];
@@ -367,16 +371,25 @@ class RoboFile extends \Robo\Tasks
             }
             if($type === 'radio' || $type === 'select'){
                 $selec_option = true;
+                $options = [];
                 do{
-                    $label_option = trim($this->ask("<info>Escriba la etiqueta (label) o nombre del radio input</info>"));
-                    $valor_option = trim($this->ask("<info>Escriba el valor del ".$type." input</info>"));
-                    array_push($options,[$label_option => $valor_option]);
-                    $selec_option = strtolower($this->ask("<info>¿Deseas crear otro input radio? (si/no) (s/n)</info>"));
-                    if($selec_option === 'n' || $selec_option === 'no' ){
-                        $selec_option = false;
-                    } 
+                  $type_list = $type;
+                  if($type == 'select'){
+                    $type_list = 'option';
+                  }
+                  $label_option = trim($this->ask("<info>Escriba la etiqueta (label) o nombre del ".$type_list." input</info>"));
+                  $valor_option = trim($this->ask("<info>Escriba el valor del ".$type_list." input</info>"));
+                  array_push($options,[$label_option => $valor_option]);
+                  $selec_option = strtolower($this->ask("<info>¿Deseas crear otro input ".$type_list."? (si/no) (s/n)</info>"));
+                  if($selec_option === 'n' || $selec_option === 'no' ){
+                      $selec_option = false;
+                  } 
                 }while($selec_option);
-                array_push($input,['type'=>$type,'name'=>$inputName,'required'=>$required,'options'=>$options,'label' => $label]);
+                if($type == 'select'){
+                  array_push($input,['type'=>$type,'name'=>$inputName,'id'=>'id_'.$inputName,'required'=>$required,'options'=>$options,'label' => $label]);
+                }else{
+                  array_push($input,['type'=>$type,'name'=>$inputName,'required'=>$required,'options'=>$options,'label' => $label]);
+                }
             }else{
                 array_push($input,['type'=>$type,'name'=>$inputName,'id'=>'id_'.$inputName,'required'=>$required,'label' => $label,'placeholder' => $label]);
             }

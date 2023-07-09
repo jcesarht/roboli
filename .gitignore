@@ -3,6 +3,7 @@
 vendor/
 composer.json
 composer.lock
+config_input.txt
 
 controllers/*
 models/*
