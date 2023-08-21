@@ -38,9 +38,15 @@ class BuildForm{
                  $input[$x]['type'] == 'email' ||
                  $input[$x]['type'] == 'tel')
                 {
+                    $span_required_field = '';
+                    $check_required = array_search('required',$input[$x]);
+                    if($check_required != false){
+                        $span_required_field = '<span class="required"> * </span>';
+                    }
+
                     $html_inputs .= '
                     <div class="form-group">';
-                    $html_inputs .= '<label for="'.$id_input.'">'.$label_name.'</label>';
+                    $html_inputs .= '<label class="d-block" for="'.$id_input.'">'.$label_name.' '.$span_required_field.'</label>';
                     $html_inputs .= '<input class="form-control" ';
                     foreach($input[$x] as $attribute => $value){
                         if($attribute == 'required' and $value == 'n'){
@@ -51,14 +57,29 @@ class BuildForm{
                     $html_inputs .= ' /> ';
                     $html_inputs .= '</div>';
                 }else if($input[$x]['type'] == 'radio'){
+                    
+                    $span_required_field = '';
+                    $check_required = array_search('required',$input[$x]);
+                    if($check_required != false){
+                        $span_required_field = '<span class="required"> * </span>';
+                    }
+
+                    $html_inputs .= '
+                    <div class="form-group">';
+                    $html_inputs .= '
+                    <label class="d-block" for="'.$id_input.'">'.$label_name.' '.$span_required_field.'</label>';
                     foreach($input[$x]['options'] as $item_radio => $radio){
                         $html_inputs .= '
                         <div class="form-check form-check-inline">';
                         $label_name = '';
-                        $html_inputs .= '<input class="form-check-input" ';
+                        $html_inputs .= '
+                        <input class="form-check-input" ';
                         foreach($input[$x] as $attribute => $value_att){
                             if(is_string($value_att) === true){
                                 if($attribute == 'required' and $value_att == 'n'){
+                                    continue;
+                                }
+                                if($attribute == 'label'){
                                     continue;
                                 }
                                 $html_inputs .= $attribute.' = "'.$value_att.'" ';
@@ -70,14 +91,19 @@ class BuildForm{
                             $label_name = $key;   
                         }
                         $html_inputs .= 'id="'.$id_input.'"/>';
-                        $html_inputs .= '<label for="'.$id_input.'">'.$label_name.'</label>';
-                        $html_inputs .= '</div>';
+                        $html_inputs .= '
+                        <label for="'.$id_input.'">'.$label_name.'</label>';
+                        $html_inputs .= '
+                        </div>';
                     }
+                    $html_inputs .= '
+                    </div>';
                 }
                 else if($input[$x]['type'] == 'checkbox'){
                     $html_inputs .= '
                     <div class="form-group">';
-                    $html_inputs .= '<input class="form-control" ';
+                    $html_inputs .= '
+                    <input class="form-control" ';
                     foreach($input[$x] as $attribute => $value){
                         if($attribute == 'required' and $value == 'n'){
                             continue;
@@ -85,11 +111,20 @@ class BuildForm{
                         $html_inputs .= $attribute.' = "'.$value.'" ';
                     }
                     $html_inputs .= '/>';
-                    $html_inputs .= '<label for="'.$id_input.'">'.$label_name.'</label>';
+                    $html_inputs .= '
+                    <label for="'.$id_input.'">'.$label_name.'</label>';
                 }else if($input[$x]['type'] == 'select')
                 {
-                    $html_inputs .= '<label for="'.$id_input.'">'.$label_name.'</label>';
-                    $html_inputs .= '<select class="form-control"';
+                    $span_required_field = '';
+                    $check_required = array_search('required',$input[$x]);
+                    if($check_required != false){
+                        $span_required_field = '<span class="required"> * </span>';
+                    }
+                    
+                    $html_inputs .= '
+                    <label class="d-block" for="'.$id_input.'">'.$label_name.' '.$span_required_field.'</label>';
+                    $html_inputs .= '
+                    <select class="form-control"';
                     foreach($input[$x] as $attribute => $value){
                         if(is_string($value) === true && $attribute !== 'type'){ 
                             if($attribute == 'required' and $value == 'n'){
@@ -104,7 +139,9 @@ class BuildForm{
                             $html_inputs .= '<option value = "'.$value_option.'">'.$name_option.'</option>';
                         }
                     }
-                    $html_inputs .= ' </select></div>';
+                    $html_inputs .= '
+                    </select>
+                    </div>';
                 }
             }
         }else{
@@ -146,9 +183,15 @@ class BuildForm{
                  $input[$x]['type'] == 'email' ||
                  $input[$x]['type'] == 'tel')
                  {
+                    $span_required_field = '';
+                    $check_required = array_search('required',$input[$x]);
+                    if($check_required != false){
+                        $span_required_field = '<span class="required"> * </span>';
+                    }
+
                     $html_inputs .= '
                     <div class="form-group">';
-                    $html_inputs .= '<label for="'.$id_input.'">'.$label_name.'</label>';
+                    $html_inputs .= '<label for="'.$id_input.'">'.$label_name.' '.$span_required_field.'</label>';
                     $html_inputs .= '<input class="form-control" ';
                     foreach($input[$x] as $attribute => $value){
                         if($attribute == 'required' and $value == 'n'){
@@ -159,6 +202,16 @@ class BuildForm{
                     $html_inputs .= '<?php if($there_data){ echo \'value="\'.$data[0]["'.$input[$x]['name'].'"].\'" \'; } ?> /> ';
                     $html_inputs .= '</div>';
                 }else if($input[$x]['type'] == 'radio'){
+                    $span_required_field = '';
+                    $check_required = array_search('required',$input[$x]);
+                    if($check_required != false){
+                        $span_required_field = '<span class="required"> * </span>';
+                    }
+                    
+                    $html_inputs .= '
+                    <div class="form-group">';
+                    $html_inputs .= '
+                    <label class="d-block" for="'.$id_input.'">'.$label_name.' '.$span_required_field.'</label>';
                     foreach($input[$x]['options'] as $item_radio => $radio){
                         $html_inputs .= '
                         <div class="form-check form-check-inline">';
@@ -178,7 +231,10 @@ class BuildForm{
                         $html_inputs .= '<label for="'.$id_input.'">'.$label_name.'</label>';
                         $html_inputs .= '</div>';
                     }
+                    $html_inputs .= '
+                    </div>';
                 }else if($input[$x]['type'] == 'checkbox'){
+                    
                     $html_inputs .= '
                     <div class="form-group">';
                     $html_inputs .= '<input class="form-control" ';
@@ -192,7 +248,13 @@ class BuildForm{
                     $html_inputs .= '<label for="'.$id_input.'">'.$label_name.'</label>';
                 }else if($input[$x]['type'] == 'select')
                 {
-                    $html_inputs .= '<label for="'.$id_input.'">'.$label_name.'</label>';
+                    $span_required_field = '';
+                    $check_required = array_search('required',$input[$x]);
+                    if($check_required != false){
+                        $span_required_field = '<span class="required"> * </span>';
+                    }
+                    
+                    $html_inputs .= '<label for="'.$id_input.'">'.$label_name.' '.$span_required_field.'</label>';
                     $html_inputs .= '<select class="form-control"';
                     foreach($input[$x] as $attribute => $value){
                         if(is_string($value) === true && $attribute !== 'type'){ 
@@ -244,6 +306,7 @@ class BuildForm{
         $html_content .= '</div>';
         return $html_content;
     }
+    
     public function embebCodeToViewShow(){
         $inputs = $this->getInputs();
         $record = '';

@@ -19,7 +19,7 @@
         <form action="<?= base_url() ?>index.php/%Controller%/add" method="post"  >
             %Inputs%
             <div class="col-12 align-items-end">
-              <button type="submit" class="btn btn-success col-2">Save</button>
+              <button type="submit" class="btn btn-success col-md-3 col-sm-5 col-12">Save</button>
             </div>
         </form>
         <!-- end the form -->
